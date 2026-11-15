@@ -1,0 +1,43 @@
+# One-command local setup. MongoDB runs as a SINGLE-NODE REPLICA SET (rs0)
+# because the seat-claim transactions require a replica set — a standalone
+# mongod cannot run them. The init service runs rs.initiate() once.
+services:
+  mongo:
+    image: mongo:7
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      mongo:
+        condition: service_healthy
+    command: >
+      mongosh --host mongo:27017 --quiet --eval
+      "try { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongo:27017'}]}) } catch (e) { print('initiate: ' + e.codeName) }"
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      MONGO_URI: mongodb://mongo:27017/hack4hack-ps1?replicaSet=rs0
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me}
+      CLIENT_URL: http://localhost:5173
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+
+volumes:
+  mongo-data:

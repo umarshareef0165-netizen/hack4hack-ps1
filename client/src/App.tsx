@@ -127,7 +127,7 @@ export default function App() {
       {error && <p role="alert" className="error">{error}</p>}
       {view === 'board' && <Board teams={board} user={user} onDone={refresh} setMessage={setMessage} setError={setError} />}
       {view === 'my-team' && <MyTeam team={myTeam} user={user} onDone={refresh} setMessage={setMessage} setError={setError} />}
-      {view === 'create' && <CreateTeam onDone={(t) => { setMyTeam(t); setView('my-team'); void refresh(); }} setMessage={setMessage} setError={setError} />}
+      {view === 'create' && <CreateTeam onDone={(t) => { setMyTeam(t); void refresh(); }} onGoToTeam={() => setView('my-team')} setMessage={setMessage} setError={setError} />}
       {view === 'suggestions' && <SuggestionsPanel suggestions={suggestions} scoring={scoring} onLoad={async () => { const r = await api.suggestions(); setSuggestions(r.suggestions); setScoring(r.scoring); }} />}
     </main>
   );
@@ -262,8 +262,8 @@ function MyTeam({ team, user, onDone, setMessage, setError }: {
   );
 }
 
-function CreateTeam({ onDone, setMessage, setError }: {
-  onDone: (t: Team) => void; setMessage: (m: string) => void; setError: (m: string) => void;
+function CreateTeam({ onDone, onGoToTeam, setMessage, setError }: {
+  onDone: (t: Team) => void; onGoToTeam: () => void; setMessage: (m: string) => void; setError: (m: string) => void;
 }) {
   const [inviteCode, setInviteCode] = useState('');
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -291,7 +291,7 @@ function CreateTeam({ onDone, setMessage, setError }: {
         <label>Maximum team size (2–5) <input name="maxSize" type="number" min={2} max={5} defaultValue={5} required /></label>
         <button type="submit">Create team</button>
       </form>
-      {inviteCode && <p>Your invite code (shown once — copy it now): <code>{inviteCode}</code></p>}
+      {inviteCode && <><p>Your invite code (shown once — copy it now): <code>{inviteCode}</code></p><p><button type="button" onClick={onGoToTeam}>Go to My team →</button></p></>}
     </section>
   );
 }

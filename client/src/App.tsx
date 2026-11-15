@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, getToken, setToken, type BoardTeam, type Suggestion, type Team, type User } from './lib/api';
+import { api, API, getToken, setToken, type BoardTeam, type Suggestion, type Team, type User } from './lib/api';
 
 type View = 'board' | 'my-team' | 'create' | 'suggestions';
 
@@ -39,7 +39,7 @@ export default function App() {
   useEffect(() => {
     const token = getToken();
     if (!token || !user) return;
-    const src = new EventSource(`/api/events?token=${encodeURIComponent(token)}`);
+    const src = new EventSource(`${API}/api/events?token=${encodeURIComponent(token)}`);
     src.onopen = () => setLive(true);
     src.onerror = () => setLive(false);
     src.onmessage = () => void refresh();

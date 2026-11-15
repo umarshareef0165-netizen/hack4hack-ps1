@@ -1,6 +1,6 @@
 // Minimal API client. The JWT lives in localStorage; every team mutation
 // sends a fresh Idempotency-Key so a double-click can never double-apply.
-const API = import.meta.env.VITE_API_URL ?? '';
+export const API = import.meta.env.VITE_API_URL ?? '';
 
 export function getToken(): string | null {
   return localStorage.getItem('hack4hack-token');

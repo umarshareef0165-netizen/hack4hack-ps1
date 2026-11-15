@@ -58,7 +58,7 @@ npm test --workspace=server
 Includes the **race test** (50 concurrent claims for the last seat → exactly
 one succeeds), idempotency tests, audit-log tests, invite-code expiry +
 rate-limit tests, leadership-passing and team-deletion tests, and an SSE
-live-update test. CI runs them on every push (`.github/workflows/ci.yml`).
+live-update test. CI is configured in `.github/workflows/ci.yml` (runs on every push once the workflow file is live on the remote repo).
 
 ## Load test (honest numbers)
 

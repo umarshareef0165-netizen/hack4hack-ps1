@@ -1,5 +1,7 @@
 // Minimal API client. The JWT lives in localStorage; every team mutation
 // sends a fresh Idempotency-Key so a double-click can never double-apply.
+// API is the Render origin (VITE_API_URL); the SSE stream in App.tsx must
+// use it too — a relative /api/events path 404s on the Vercel client.
 export const API = import.meta.env.VITE_API_URL ?? '';
 
 export function getToken(): string | null {
